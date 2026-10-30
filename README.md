@@ -174,3 +174,16 @@ and infrastructure management.
 
 TLS, high availability, and database roles with restricted application
 permissions are not implemented.
+
+## Continuous Integration
+
+GitHub Actions runs on pushes and pull requests targeting `main`.
+
+The workflow checks:
+- Terraform formatting
+- Provider initialization using the committed lock file
+- Configuration validity
+
+CI performs static validation. Application readiness and database
+persistence are verified separately through runtime tests.
+Deployment is performed locally using reviewed Terraform plans.
