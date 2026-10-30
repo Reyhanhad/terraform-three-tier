@@ -1,0 +1,3 @@
+web_port      = 8083
+api_image_tag = "636b17bdabef303a168ae8712fb1f94977e790fa"
+db_password   = "REPLACE_WITH_A_RANDOM_PASSWORD"
