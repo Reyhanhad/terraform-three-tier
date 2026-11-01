@@ -145,7 +145,55 @@ After replacement:
 - Terraform reported no changes.
 
 This verifies persistence across container replacement.
-Backup and restore have not yet been tested.
+## Backup and Restore
+
+Create a backup from the project directory:
+
+```bash
+bash scripts/backup-db.sh
+```
+
+The script creates a custom-format PostgreSQL archive in `backups/`
+and checks that `pg_restore` can read its contents.
+Backup files are excluded from Git.
+
+Restore an archive into the dedicated test database:
+
+```bash
+bash scripts/restore-db-test.sh "backups/YOUR_BACKUP_FILE.dump"
+```
+
+Replace `YOUR_BACKUP_FILE.dump` with the filename printed by the
+backup script.
+
+The restore script:
+- Uses the fixed destination `stockdb_restore_test`.
+- Creates the test database if it does not exist.
+- Replaces archived objects in that test database.
+- Runs the restore in a single transaction.
+
+Verify product data:
+
+```bash
+python scripts/verify-restore.py
+```
+
+The verifier compares every product row, including IDs, names,
+stock values, and creation timestamps.
+
+Avoid changing application data between backup and comparison.
+
+### Observed Results
+
+- Verification reported: `PASS: 2 produk identik pada kedua database.`
+- The original application remained ready with its database connected.
+
+The Python verifier checks product data. It does not validate schema,
+sequence state, roles, or permissions.
+
+This recovery exercise uses a separate database within the same
+PostgreSQL instance. Recovery into a new instance is outside the
+verified scope.
 
 ## State and Credentials
 
